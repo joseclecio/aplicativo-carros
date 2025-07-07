@@ -47,7 +47,7 @@ mongoose.connect(mongoURI, {
 const veiculoRoutes = require('./src/routes/veiculo.routes');
 const adminRoutes = require('./src/routes/admin.routes'); 
 // Futuramente, você adicionará os outros aqui:
-// const lojaRoutes = require('./src/routes/loja.routes');
+const lojaRoutes = require('./src/routes/loja.routes');
 // const adminRoutes = require('./src/routes/admin.routes');
 
 // Define os prefixos para cada conjunto de rotas.
@@ -55,7 +55,7 @@ const adminRoutes = require('./src/routes/admin.routes');
 app.use('/api/veiculos', veiculoRoutes);
 app.use('/api/admin', adminRoutes);
 // Quando criar as outras rotas, você as registrará da mesma forma:
-// app.use('/api/lojas', lojaRoutes);
+app.use('/api/lojas', lojaRoutes);
 // app.use('/api/admin', adminRoutes);
 
 // Rota "raiz" para verificar se a API está no ar.

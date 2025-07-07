@@ -1,6 +1,8 @@
+// /backend/src/controllers/admin.controller.js
+
 const UsuarioAdmin = require('../models/usuarioAdmin.model');
 const bcrypt = require('bcryptjs');
-const jwt = ('jsonwebtoken');
+const jwt = require('jsonwebtoken'); // <<< ESTA É A LINHA CORRIGIDA
 
 // Função para registar um novo administrador (opcional, pode ser feito apenas uma vez direto no BD)
 exports.register = async (req, res) => {
@@ -63,6 +65,7 @@ exports.login = async (req, res) => {
         );
 
     } catch (error) {
+        // Agora, o erro não deve mais acontecer, mas mantemos o catch por segurança
         res.status(500).json({ message: "Erro no servidor ao fazer login.", error: error.message });
     }
 };

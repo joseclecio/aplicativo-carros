@@ -1,0 +1,56 @@
+/* /frontend/src/components/public/Cards.css */
+.card-veiculo {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-veiculo:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.card-veiculo-imagem {
+  width: 100%;
+  height: 200px;
+}
+
+.card-veiculo-imagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-veiculo-conteudo {
+  padding: 15px;
+  border-top: 1px solid #eee;
+  flex-grow: 1; /* Faz o conteúdo crescer para preencher o espaço */
+}
+
+.card-veiculo-conteudo h3 {
+  font-size: 1rem;
+  margin: 0 0 10px 0;
+  min-height: 40px; /* Garante altura mínima para alinhar os cards */
+}
+
+.card-veiculo-preco {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #007bff;
+  margin: 0 0 10px 0;
+}
+
+.card-veiculo-detalhes {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #666;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 10px;
+}

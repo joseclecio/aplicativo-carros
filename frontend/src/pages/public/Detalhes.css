@@ -1,0 +1,90 @@
+/* /frontend/src/pages/public/Detalhes.css */
+.detalhes-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  display: flex;
+  gap: 30px;
+  font-family: sans-serif;
+}
+.detalhes-main {
+  flex: 2; /* Ocupa 2/3 do espaço */
+}
+.detalhes-sidebar {
+  flex: 1; /* Ocupa 1/3 do espaço */
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  align-self: flex-start; /* Alinha no topo */
+}
+.foto-principal img {
+  width: 100%;
+  border-radius: 8px;
+}
+.thumbnails {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.thumbnails img {
+  width: 100px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+.thumbnails img:hover, .thumbnails img.active {
+  border-color: #007bff;
+}
+.descricao-veiculo {
+  margin-top: 30px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+.detalhes-sidebar h1 {
+  font-size: 1.8em;
+  margin-top: 0;
+}
+.preco-detalhes {
+  font-size: 2em;
+  font-weight: bold;
+  color: #007bff;
+  margin: 10px 0 20px 0;
+}
+.whatsapp-button {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  background-color: #25d366;
+  color: white;
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: bold;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  margin-bottom: 20px;
+}
+.whatsapp-button:hover {
+  background-color: #128c7e;
+}
+.specs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.specs-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.specs-list li:last-child {
+  border-bottom: none;
+}
+.specs-list li strong {
+  color: #333;
+}
