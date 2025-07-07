@@ -67,48 +67,56 @@ exports.deleteVeiculo = async (req, res) => {
 
 // 5. Obter veículos de particulares
 exports.getParticulares = async (req, res) => {
-    try {
-        const veiculos = await Veiculo.find({ tipoVendedor: 'particular' });
-        res.status(200).json(veiculos);
-    } catch (error) {
-        res.status(500).json({ message: "Erro ao buscar veículos de particulares", error: error.message });
-    }
+  try {
+    const veiculos = await Veiculo.find({ tipoVendedor: 'particular' });
+    res.status(200).json(veiculos);
+  } catch (error) {
+    res.status(500).json({ message: "Erro ao buscar veículos de particulares", error: error.message });
+  }
 };
 
 // 6. Obter veículos de uma loja específica
 exports.getVeiculosByLoja = async (req, res) => {
-    try {
-        const { idLoja } = req.params;
-        const veiculos = await Veiculo.find({ tipoVendedor: 'loja', idVendedor: idLoja });
-        res.status(200).json(veiculos);
-    } catch (error) {
-        res.status(500).json({ message: "Erro ao buscar veículos da loja", error: error.message });
-    }
+  try {
+    const { idLoja } = req.params;
+
+    // --- INÍCIO DA ALTERAÇÃO PARA DEBUG ---
+    console.log(`[DEBUG] Recebido pedido para buscar veículos da loja com ID: ${idLoja}`);
+
+    const veiculos = await Veiculo.find({ tipoVendedor: 'loja', idVendedor: idLoja });
+
+    console.log(`[DEBUG] Encontrados ${veiculos.length} veículos para esta loja.`);
+    // --- FIM DA ALTERAÇÃO PARA DEBUG ---
+
+    res.status(200).json(veiculos);
+  } catch (error) {
+    res.status(500).json({ message: "Erro ao buscar veículos da loja", error: error.message });
+  }
 };
 
 // 7. Obter detalhes de um único veículo
 exports.getVeiculoById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        // Usamos .populate() para trazer os dados da loja junto com o veículo
-        const veiculo = await Veiculo.findById(id).populate('idVendedor', 'nome logomarcaUrl whatsapp');
-        if (!veiculo) {
-            return res.status(404).json({ message: "Veículo não encontrado." });
-        }
-        res.status(200).json(veiculo);
-    } catch (error) {
-        res.status(500).json({ message: "Erro ao buscar detalhes do veículo", error: error.message });
+  try {
+    const { id } = req.params;
+    // Usamos .populate() para trazer os dados da loja junto com o veículo
+    const veiculo = await Veiculo.findById(id).populate('idVendedor', 'nome logomarcaUrl whatsapp');
+    if (!veiculo) {
+      return res.status(404).json({ message: "Veículo não encontrado." });
     }
+    res.status(200).json(veiculo);
+  } catch (error) {
+    res.status(500).json({ message: "Erro ao buscar detalhes do veículo", error: error.message });
+  }
 };
 
 // 8. Incrementar visualização
 exports.incrementarVisualizacao = async (req, res) => {
-    try {
-        const { id } = req.params;
-        // O operador $inc do MongoDB é atómico e ideal para contadores
-        await Veiculo.findByIdAndUpdate(id, { $inc: { visualizacoes: 1 } });
-        res.status(200).json({ message: 'Visualização registrada.' });
-    } catch (error) {
-        res.status(500).json({ message: 'Erro ao registrar visualização', error: error.message });
-    }
+  try {
+    const { id } = req.params;
+    // O operador $inc do MongoDB é atómico e ideal para contadores
+    await Veiculo.findByIdAndUpdate(id, { $inc: { visualizacoes: 1 } });
+    res.status(200).json({ message: 'Visualização registrada.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao registrar visualização', error: error.message });
+  }
 };

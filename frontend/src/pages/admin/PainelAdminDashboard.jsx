@@ -39,15 +39,15 @@ const PainelAdminDashboard = () => {
   const handleDelete = async (id) => {
     // Pede confirmação antes de apagar
     if (window.confirm('Tem a certeza de que deseja apagar este veículo?')) {
-        try {
-            await apiClient.delete(`/veiculos/${id}`);
-            // Atualiza a lista de veículos removendo o que foi apagado
-            setVeiculos(veiculos.filter(v => v._id !== id));
-            alert('Veículo apagado com sucesso!');
-        } catch (error) {
-            console.error("Erro ao apagar veículo:", error);
-            alert('Falha ao apagar o veículo.');
-        }
+      try {
+        await apiClient.delete(`/veiculos/${id}`);
+        // Atualiza a lista de veículos removendo o que foi apagado
+        setVeiculos(veiculos.filter(v => v._id !== id));
+        alert('Veículo apagado com sucesso!');
+      } catch (error) {
+        console.error("Erro ao apagar veículo:", error);
+        alert('Falha ao apagar o veículo.');
+      }
     }
   };
 
@@ -56,10 +56,14 @@ const PainelAdminDashboard = () => {
   }
 
   return (
+
     <div className="dashboard-container">
       <header className="dashboard-header">
         <h1>Painel de Controlo de Veículos</h1>
         <div>
+          {/* <<< ADICIONE ESTE BOTÃO/LINK >>> */}
+          <Link to="/admin/lojas" className="btn btn-secondary">Gerir Lojas</Link>
+
           <Link to="/admin/veiculo/novo" className="btn btn-primary">Adicionar Novo Veículo</Link>
           <button onClick={handleLogout} className="btn btn-secondary">Sair</button>
         </div>

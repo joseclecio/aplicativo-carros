@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // --- LAYOUTS E COMPONENTES DE AUTENTICAÇÃO ---
-import LayoutPublico from './components/layout/LayoutPublico'; // <<< Importamos o novo layout
+import LayoutPublico from './components/layout/LayoutPublico';
 import RotaProtegida from './components/auth/RotaProtegida';
 
 // --- PÁGINAS PÚBLICAS ---
@@ -16,13 +16,17 @@ import PainelAdminLogin from './pages/admin/PainelAdminLogin';
 import PainelAdminDashboard from './pages/admin/PainelAdminDashboard';
 import FormularioVeiculo from './pages/admin/FormularioVeiculo';
 
+// --- IMPORTS QUE FALTAVAM ---
+// Adicione estas duas linhas para importar os novos componentes de gestão de lojas
+import PainelLojas from './pages/admin/PainelLojas';
+import FormularioLoja from './pages/admin/FormularioLoja';
+
+
 function App() {
   return (
     <Router>
       <Routes>
-        {/* --- ROTAS PÚBLICAS (AGORA DENTRO DO LAYOUT) --- */}
-        {/* O componente LayoutPublico será renderizado e a <Outlet> dentro dele
-            será substituída pelo `element` da rota filha que corresponde à URL. */}
+        {/* --- ROTAS PÚBLICAS (DENTRO DO LAYOUT) --- */}
         <Route element={<LayoutPublico />}>
           <Route path="/" element={<PaginaInicial />} />
           <Route path="/lojas" element={<ListaLojas />} />
@@ -31,12 +35,19 @@ function App() {
           <Route path="/veiculo/:id" element={<DetalhesVeiculo />} />
         </Route>
 
-        {/* --- ROTAS DO PAINEL ADMINISTRATIVO (FICAM FORA DO LAYOUT PÚBLICO) --- */}
+        {/* --- ROTAS DO PAINEL ADMINISTRATIVO --- */}
         <Route path="/admin/login" element={<PainelAdminLogin />} />
         <Route element={<RotaProtegida />}>
           <Route path="/admin/dashboard" element={<PainelAdminDashboard />} />
+          
+          {/* ROTAS DE GESTÃO DE VEÍCULOS */}
           <Route path="/admin/veiculo/novo" element={<FormularioVeiculo />} />
           <Route path="/admin/veiculo/editar/:id" element={<FormularioVeiculo />} />
+          
+          {/* ROTAS DE GESTÃO DE LOJAS (JÁ EXISTENTES, AGORA COM IMPORT CORRETO) */}
+          <Route path="/admin/lojas" element={<PainelLojas />} />
+          <Route path="/admin/loja/novo" element={<FormularioLoja />} />
+          <Route path="/admin/loja/editar/:id" element={<FormularioLoja />} />
         </Route>
         
         {/* Rota "Not Found" */}

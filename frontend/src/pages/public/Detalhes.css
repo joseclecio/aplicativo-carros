@@ -88,3 +88,41 @@
 .specs-list li strong {
   color: #333;
 }
+
+/* --- NOVOS ESTILOS PARA A GALERIA --- */
+
+/* Adiciona posicionamento relativo para que as setas possam ser posicionadas absolutamente dentro dele */
+.foto-principal {
+  position: relative;
+}
+
+/* Estilo base para ambas as setas */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 5px 15px;
+  border-radius: 50%;
+  line-height: 1;
+  z-index: 10;
+  transition: background-color 0.2s;
+}
+
+.arrow:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Posicionamento específico para cada seta */
+.arrow-left {
+  left: 10px;
+}
+
+.arrow-right {
+  right: 10px;
+}
