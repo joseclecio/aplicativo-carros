@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import apiClient from '../../api/axiosConfig';
-import { Container, Row, Col, Card, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Card, Spinner, Button, ButtonGroup } from 'react-bootstrap';
 
 const ListaLojas = () => {
   const [lojas, setLojas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' é o padrão
 
   useEffect(() => {
     apiClient.get('/lojas')
@@ -20,17 +21,39 @@ const ListaLojas = () => {
 
   return (
     <Container>
-      <h1 className="mb-4">Lojas Parceiras</h1>
+      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h1 className="mb-2 mb-md-0">Lojas Parceiras</h1>
+        <ButtonGroup>
+          <Button variant={viewMode === 'grid' ? 'primary' : 'outline-primary'} onClick={() => setViewMode('grid')}>
+            <i className="bi bi-grid-3x3-gap-fill me-1"></i> Cards
+          </Button>
+          <Button variant={viewMode === 'list' ? 'primary' : 'outline-primary'} onClick={() => setViewMode('list')}>
+            <i className="bi bi-list-ul me-1"></i> Lista
+          </Button>
+        </ButtonGroup>
+      </div>
+
       <Row>
         {lojas.map(loja => (
-          <Col key={loja._id} md={4} lg={3} className="mb-4">
-            <Card as={Link} to={`/loja/${loja._id}`} className="h-100 text-center text-decoration-none text-dark card-hover border-0 shadow-sm">
-              <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-                <Card.Img variant="top" src={loja.logomarcaUrl} style={{ width: '80%', height: '120px', objectFit: 'contain' }} />
-                <Card.Title className="mt-3">{loja.nome}</Card.Title>
+          // --- INÍCIO DA CORREÇÃO ---
+          <Col key={loja._id} lg={viewMode === 'grid' ? 3 : 12} md={viewMode === 'grid' ? 4 : 12} className="mb-4">
+            {/* Adicionamos a classe condicional aqui */}
+            <Card
+              as={Link}
+              to={`/loja/${loja._id}`}
+              className={`h-100 text-decoration-none text-dark card-hover border-0 shadow-sm ${viewMode === 'list' ? 'store-list-item' : 'store-grid-item'}`}
+            >
+              <Card.Body>
+                <div className="store-logo-container">
+                  <Card.Img src={loja.logomarcaUrl} className="store-logo" />
+                </div>
+                {/* A div .store-info foi removida para simplificar. 
+                    O flexbox do Card.Body já organiza os itens. */}
+                <Card.Title className="m-0">{loja.nome}</Card.Title>
               </Card.Body>
             </Card>
           </Col>
+          // --- FIM DA CORREÇÃO ---
         ))}
       </Row>
     </Container>

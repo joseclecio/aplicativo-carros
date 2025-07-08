@@ -94,3 +94,52 @@ code {
   object-fit: contain;
   /* 'contain' para logomarcas, 'cover' para fotos normais */
 }
+
+/* /frontend/src/index.css */
+
+/* ... (código CSS existente, como o .card-hover) ... */
+
+/* --- ESTILOS CORRIGIDOS E FINAIS PARA A LISTA DE LOJAS (SUBSTITUA OS ANTIGOS) --- */
+
+/* Visualização em LISTA */
+.store-list-item .card-body {
+  display: flex;
+  flex-direction: row; /* <<< A CORREÇÃO PRINCIPAL: ALINHAMENTO HORIZONTAL */
+  align-items: center; /* Centraliza verticalmente o logo e o nome */
+  padding: 0.75rem;
+  gap: 1.5rem; /* Espaçamento entre o logo e o nome */
+}
+
+.store-list-item .store-logo-container {
+  width: 120px;
+  height: 70px;
+  flex-shrink: 0; /* Impede que o container do logo encolha */
+}
+
+.store-list-item .store-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Visualização em GRID */
+.store-grid-item .card-body {
+  display: flex;
+  flex-direction: column; /* Alinhamento vertical */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.25rem;
+}
+
+.store-grid-item .store-logo-container {
+  width: 80%;
+  height: 120px;
+  margin-bottom: 1rem;
+}
+
+.store-grid-item .store-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

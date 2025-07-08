@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // --- LAYOUTS E COMPONENTES DE AUTENTICAÇÃO ---
 import LayoutPublico from './components/layout/LayoutPublico';
+import LayoutAdmin from './components/layout/LayoutAdmin'; // O nosso novo layout do painel
 import RotaProtegida from './components/auth/RotaProtegida';
 
 // --- PÁGINAS PÚBLICAS ---
@@ -14,19 +15,15 @@ import DetalhesVeiculo from './pages/public/DetalhesVeiculo';
 // --- PÁGINAS DO PAINEL ADMIN ---
 import PainelAdminLogin from './pages/admin/PainelAdminLogin';
 import PainelAdminDashboard from './pages/admin/PainelAdminDashboard';
-import FormularioVeiculo from './pages/admin/FormularioVeiculo';
-
-// --- IMPORTS QUE FALTAVAM ---
-// Adicione estas duas linhas para importar os novos componentes de gestão de lojas
 import PainelLojas from './pages/admin/PainelLojas';
+import FormularioVeiculo from './pages/admin/FormularioVeiculo';
 import FormularioLoja from './pages/admin/FormularioLoja';
-
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* --- ROTAS PÚBLICAS (DENTRO DO LAYOUT) --- */}
+        {/* --- ROTAS PÚBLICAS --- */}
         <Route element={<LayoutPublico />}>
           <Route path="/" element={<PaginaInicial />} />
           <Route path="/lojas" element={<ListaLojas />} />
@@ -36,19 +33,28 @@ function App() {
         </Route>
 
         {/* --- ROTAS DO PAINEL ADMINISTRATIVO --- */}
+
+        {/* A rota de login continua separada */}
         <Route path="/admin/login" element={<PainelAdminLogin />} />
-        <Route element={<RotaProtegida />}>
-          <Route path="/admin/dashboard" element={<PainelAdminDashboard />} />
-          
-          {/* ROTAS DE GESTÃO DE VEÍCULOS */}
-          <Route path="/admin/veiculo/novo" element={<FormularioVeiculo />} />
-          <Route path="/admin/veiculo/editar/:id" element={<FormularioVeiculo />} />
-          
-          {/* ROTAS DE GESTÃO DE LOJAS (JÁ EXISTENTES, AGORA COM IMPORT CORRETO) */}
-          <Route path="/admin/lojas" element={<PainelLojas />} />
-          <Route path="/admin/loja/novo" element={<FormularioLoja />} />
-          <Route path="/admin/loja/editar/:id" element={<FormularioLoja />} />
+        
+        {/* --- INÍCIO DA CORREÇÃO ---
+          Criamos uma rota "mãe" com o caminho "/admin". Ela renderiza o LayoutAdmin.
+          Todas as rotas filhas agora terão os seus caminhos relativos a "/admin".
+          Ex: "/admin" + "dashboard" = "/admin/dashboard"
+        */}
+        <Route path="/admin" element={<RotaProtegida />}>
+          <Route element={<LayoutAdmin />}>
+            {/* O "index" define qual componente carregar na rota "/admin" exata */}
+            <Route index element={<PainelAdminDashboard />} /> 
+            <Route path="dashboard" element={<PainelAdminDashboard />} />
+            <Route path="lojas" element={<PainelLojas />} />
+            <Route path="veiculo/novo" element={<FormularioVeiculo />} />
+            <Route path="veiculo/editar/:id" element={<FormularioVeiculo />} />
+            <Route path="loja/novo" element={<FormularioLoja />} />
+            <Route path="loja/editar/:id" element={<FormularioLoja />} />
+          </Route>
         </Route>
+        {/* --- FIM DA CORREÇÃO --- */}
         
         {/* Rota "Not Found" */}
         <Route path="*" element={<h2>404 - Página não encontrada</h2>} />

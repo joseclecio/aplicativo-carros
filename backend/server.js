@@ -48,6 +48,7 @@ const veiculoRoutes = require('./src/routes/veiculo.routes');
 const adminRoutes = require('./src/routes/admin.routes'); 
 // Futuramente, você adicionará os outros aqui:
 const lojaRoutes = require('./src/routes/loja.routes');
+const dashboardRoutes = require('./src/routes/dashboard.routes');
 // const adminRoutes = require('./src/routes/admin.routes');
 
 // Define os prefixos para cada conjunto de rotas.
@@ -56,6 +57,7 @@ app.use('/api/veiculos', veiculoRoutes);
 app.use('/api/admin', adminRoutes);
 // Quando criar as outras rotas, você as registrará da mesma forma:
 app.use('/api/lojas', lojaRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 // app.use('/api/admin', adminRoutes);
 
 // Rota "raiz" para verificar se a API está no ar.

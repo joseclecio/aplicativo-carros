@@ -1,0 +1,46 @@
+/* /frontend/src/components/admin/SidebarAdmin.css */
+.sidebar-wrapper {
+    background-color: #343a40;
+    /* Cor escura do Bootstrap */
+    color: #fff;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar-wrapper .nav {
+    height: 100%;
+}
+
+.sidebar-header {
+    padding: 1.25rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid #495057;
+}
+
+.sidebar-link {
+    color: #adb5bd;
+    padding: 1rem 1.25rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background-color: #495057;
+    color: #fff;
+}
+
+/* ... (código CSS existente) ... */
+
+.logout-link {
+    color: #dc3545 !important;
+    /* Cor vermelha do Bootstrap para perigo/sair */
+    font-weight: bold;
+}
+
+.logout-link:hover {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+}
