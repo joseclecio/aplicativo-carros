@@ -69,10 +69,10 @@ const PainelLojas = () => {
                     <td className="text-center">
                       <ButtonGroup>
                         <Button as={Link} to={`/admin/loja/editar/${loja._id}`} variant="outline-primary" size="sm" title="Editar">
-                           <i className="bi bi-pencil-fill"></i>
+                          <i className="bi bi-pencil-fill"></i>
                         </Button>
                         <Button variant="outline-danger" size="sm" onClick={() => handleDelete(loja._id)} title="Apagar">
-                           <i className="bi bi-trash-fill"></i>
+                          <i className="bi bi-trash-fill"></i>
                         </Button>
                       </ButtonGroup>
                     </td>
