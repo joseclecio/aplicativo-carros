@@ -11,3 +11,86 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.card-hover {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.thumbnail-img {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.thumbnail-img.active,
+.thumbnail-img:hover {
+  border-color: #0d6efd;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0 15px;
+  border-radius: 50%;
+  z-index: 10;
+}
+
+.arrow:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.arrow-left {
+  left: 10px;
+}
+
+.arrow-right {
+  right: 10px;
+}
+
+/* /frontend/src/index.css */
+
+/* Estilos para a nova área de upload clicável */
+.upload-placeholder {
+  width: 250px;
+  height: 150px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  overflow: hidden;
+  /* Garante que a imagem não ultrapasse as bordas arredondadas */
+}
+
+.upload-placeholder:hover {
+  background-color: #f8f9fa;
+  border-color: #0d6efd;
+}
+
+.placeholder-content {
+  text-align: center;
+  color: #6c757d;
+}
+
+.upload-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* 'contain' para logomarcas, 'cover' para fotos normais */
+}

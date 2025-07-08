@@ -9,7 +9,6 @@ const authMiddleware = require('../middleware/auth.middleware');
 |--------------------------------------------------------------------------
 | ESTRUTURA DAS ROTAS DE LOJA
 |--------------------------------------------------------------------------
-| A ordem das rotas é importante para evitar conflitos.
 */
 
 // --- ROTAS PÚBLICAS ---
@@ -18,13 +17,13 @@ const authMiddleware = require('../middleware/auth.middleware');
 // GET /api/lojas -> Lista todas as lojas para a página "Lojas Parceiras".
 router.get('/', lojaController.getAllLojas);
 
-// GET /api/lojas/:id -> Busca os detalhes de UMA loja para a página de veículos da loja.
-router.get('/:id', lojaController.getLojaById);
+// GET /api/lojas/:id -> Busca os detalhes de UMA loja.
+// Esta rota precisa de ser pública para que a página de veículos da loja possa mostrar o nome.
+router.get('/:id', lojaController.getLojaById); // << CORREÇÃO APLICADA AQUI
 
 
 // --- ROTAS ADMINISTRATIVAS PROTEGIDAS ---
-// Estas rotas requerem um token de autenticação válido. O `authMiddleware`
-// é executado antes da função do controller para garantir a segurança.
+// Estas rotas continuam a exigir um token de autenticação.
 
 // POST /api/lojas -> Cria uma nova loja.
 router.post('/', authMiddleware, lojaController.createLoja);

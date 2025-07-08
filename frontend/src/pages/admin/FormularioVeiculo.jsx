@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../../api/axiosConfig';
-import './Form.css';
+import { Container, Form, Button, Card, Row, Col, Spinner, Image } from 'react-bootstrap';
 
 const FormularioVeiculo = () => {
+    const fileInputRef = useRef(null);
     const { id } = useParams();
     const navigate = useNavigate();
     const isEditing = Boolean(id);
@@ -12,7 +13,7 @@ const FormularioVeiculo = () => {
         titulo: '',
         descricao: '',
         fotos: [],
-        tipoVendedor: 'loja', // Valor inicial padrão
+        tipoVendedor: 'loja',
         idVendedor: '',
         contatoWhatsApp: '',
         localizacao: { cidade: '', estado: 'SP' },
@@ -29,13 +30,11 @@ const FormularioVeiculo = () => {
     const [imagePreviews, setImagePreviews] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
 
-    // useEffect para buscar dados necessários (veículo para edição e lista de lojas)
     useEffect(() => {
         const fetchLojas = async () => {
             try {
                 const response = await apiClient.get('/lojas');
                 setLojas(response.data);
-                // Se não estiver a editar, define a primeira loja como padrão
                 if (!isEditing && response.data.length > 0) {
                     setVeiculo(prev => ({ ...prev, idVendedor: response.data[0]._id }));
                 }
@@ -71,13 +70,7 @@ const FormularioVeiculo = () => {
         const urlToRemove = imagePreviews[indexToRemove];
         setImagePreviews(prev => prev.filter((_, index) => index !== indexToRemove));
         if (typeof urlToRemove === 'string') {
-            setVeiculo(prev => ({
-                ...prev,
-                fotos: prev.fotos.filter(url => url !== urlToRemove)
-            }));
-        } else {
-            // Lógica para remover o ficheiro do state 'imageFiles' - simplificada
-            // Uma abordagem robusta mapearia o URL.createObjectURL de volta ao ficheiro
+            setVeiculo(prev => ({ ...prev, fotos: prev.fotos.filter(url => url !== urlToRemove) }));
         }
     };
 
@@ -87,9 +80,7 @@ const FormularioVeiculo = () => {
         const uploadedImageUrls = [];
         const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
         const uploadPreset = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
-        if (!cloudName || !uploadPreset) {
-            throw new Error("Configuração de upload incompleta.");
-        }
+        if (!cloudName || !uploadPreset) throw new Error("Configuração de upload incompleta.");
         const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
         for (const file of imageFiles) {
             const formData = new FormData();
@@ -112,11 +103,11 @@ const FormularioVeiculo = () => {
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         const [section, field] = name.split('.');
-        if (section && field) {
-            setVeiculo(prev => ({ ...prev, [section]: { ...prev[section], [field]: value } }));
-        } else {
-            setVeiculo(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-        }
+        let finalValue = value;
+        if (type === 'checkbox') finalValue = checked;
+        else if (type === 'number' && value !== '') finalValue = parseInt(value, 10);
+        if (section && field) setVeiculo(prev => ({ ...prev, [section]: { ...prev[section], [field]: finalValue } }));
+        else setVeiculo(prev => ({ ...prev, [name]: finalValue }));
     };
 
     const handleSubmit = async (e) => {
@@ -124,11 +115,7 @@ const FormularioVeiculo = () => {
         try {
             const newImageUrls = await uploadImages();
             const finalIdVendedor = veiculo.tipoVendedor === 'loja' ? veiculo.idVendedor : null;
-            const payload = {
-                ...veiculo,
-                idVendedor: finalIdVendedor,
-                fotos: [...(veiculo.fotos || []), ...newImageUrls]
-            };
+            const payload = { ...veiculo, idVendedor: finalIdVendedor, fotos: [...(veiculo.fotos || []), ...newImageUrls] };
             if (isEditing) {
                 await apiClient.put(`/veiculos/${id}`, payload);
                 alert('Veículo atualizado com sucesso!');
@@ -145,105 +132,95 @@ const FormularioVeiculo = () => {
     };
 
     return (
-        <div className="form-container">
-            <h2>{isEditing ? 'Editar Veículo' : 'Adicionar Novo Veículo'}</h2>
-            <form onSubmit={handleSubmit} className="vehicle-form">
-                
-                <div className="form-section">
-                    <h3>Fotos (até 5)</h3>
-                    <input type="file" multiple accept="image/*" onChange={handleImageChange} disabled={imagePreviews.length >= 5} />
-                    <div className="image-previews">
-                        {imagePreviews.map((preview, index) => (
-                            <div key={index} className="preview-container">
-                                <img src={preview} alt={`Pré-visualização ${index + 1}`} />
-                                <button type="button" onClick={() => handleRemoveImage(index)} className="remove-btn">×</button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="form-section">
-                    <h3>Dados Gerais</h3>
-                    <div className="form-grid">
-                        <input name="titulo" value={veiculo.titulo} onChange={handleChange} placeholder="Título do Anúncio *" required />
-                        <input name="contatoWhatsApp" value={veiculo.contatoWhatsApp} onChange={handleChange} placeholder="WhatsApp para Contato *" required />
-                        
-                        {/* --- AQUI ESTÁ A CORREÇÃO PRINCIPAL --- */}
-                        {/* Campo de Seleção do Tipo de Vendedor */}
-                        <div>
-                            <label>Tipo de Vendedor</label>
-                            <select name="tipoVendedor" value={veiculo.tipoVendedor} onChange={handleChange}>
-                                <option value="loja">Loja</option>
-                                <option value="particular">Particular</option>
-                            </select>
-                        </div>
-
-                        {/* Campo de Seleção da Loja (renderizado condicionalmente) */}
-                        {veiculo.tipoVendedor === 'loja' && (
-                            <div>
-                                <label>Loja</label>
-                                <select name="idVendedor" value={veiculo.idVendedor} onChange={handleChange} required={veiculo.tipoVendedor === 'loja'}>
-                                    <option value="" disabled>Selecione a Loja *</option>
-                                    {lojas.map(loja => (
-                                        <option key={loja._id} value={loja._id}>{loja.nome}</option>
+        <Container className="my-4">
+            <Card className="shadow-sm border-0">
+                <Card.Header as="h2" className="p-3">{isEditing ? 'Editar Veículo' : 'Adicionar Novo Veículo'}</Card.Header>
+                <Card.Body className="p-4">
+                    <Form onSubmit={handleSubmit}>
+                        {/* --- SEÇÃO DE FOTOS --- */}
+                        <Card className="mb-4">
+                            <Card.Header>Fotos</Card.Header>
+                            <Card.Body>
+                                <Form.Label>Adicione até 5 imagens</Form.Label>
+                                <Form.Control type="file" multiple accept="image/*" ref={fileInputRef} onChange={handleImageChange} className="d-none" />
+                                <div className="d-flex flex-wrap gap-3 mt-2">
+                                    {imagePreviews.map((preview, index) => (
+                                        <div key={index} className="position-relative">
+                                            <Image src={preview} thumbnail style={{ width: '120px', height: '90px', objectFit: 'cover' }} />
+                                            <Button variant="danger" size="sm" className="position-absolute top-0 end-0 m-1 py-0 px-2" onClick={() => handleRemoveImage(index)}>×</Button>
+                                        </div>
                                     ))}
-                                </select>
-                            </div>
-                        )}
+                                    {imagePreviews.length < 5 && (
+                                        <div className="upload-placeholder" onClick={() => fileInputRef.current.click()} title="Adicionar mais fotos">
+                                            <div className="placeholder-content">
+                                                <i className="bi bi-plus-circle-dotted fs-1"></i>
+                                                <p className="mb-0 mt-1 small">Adicionar Foto</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </Card.Body>
+                        </Card>
+
+                        {/* --- SEÇÃO DE DADOS GERAIS --- */}
+                        <Card className="mb-4">
+                           <Card.Header>Dados Gerais</Card.Header>
+                           <Card.Body>
+                                <Row>
+                                    <Form.Group as={Col} md={12} lg={6} className="mb-3"><Form.Label>Título do Anúncio *</Form.Label><Form.Control name="titulo" value={veiculo.titulo} onChange={handleChange} required /></Form.Group>
+                                    <Form.Group as={Col} md={12} lg={6} className="mb-3"><Form.Label>WhatsApp para Contato *</Form.Label><Form.Control name="contatoWhatsApp" value={veiculo.contatoWhatsApp} onChange={handleChange} required /></Form.Group>
+                                </Row>
+                                <Row>
+                                    <Form.Group as={Col} md={6} className="mb-3"><Form.Label>Tipo de Vendedor</Form.Label><Form.Select name="tipoVendedor" value={veiculo.tipoVendedor} onChange={handleChange}><option value="loja">Loja</option><option value="particular">Particular</option></Form.Select></Form.Group>
+                                    {veiculo.tipoVendedor === 'loja' && (<Form.Group as={Col} md={6} className="mb-3"><Form.Label>Loja *</Form.Label><Form.Select name="idVendedor" value={veiculo.idVendedor} onChange={handleChange} required={veiculo.tipoVendedor === 'loja'}><option value="" disabled>Selecione a Loja...</option>{lojas.map(loja => (<option key={loja._id} value={loja._id}>{loja.nome}</option>))}</Form.Select></Form.Group>)}
+                                </Row>
+                                <Form.Group><Form.Label>Descrição *</Form.Label><Form.Control as="textarea" rows={4} name="descricao" value={veiculo.descricao} onChange={handleChange} required /></Form.Group>
+                           </Card.Body>
+                        </Card>
                         
-                        <textarea name="descricao" value={veiculo.descricao} onChange={handleChange} placeholder="Descrição completa do veículo *" required className="full-width"/>
-                    </div>
-                </div>
+                        {/* --- SEÇÃO DE LOCALIZAÇÃO --- */}
+                        <Card className="mb-4">
+                            <Card.Header>Localização</Card.Header>
+                            <Card.Body>
+                                <Row>
+                                    <Form.Group as={Col} md={6} className="mb-3"><Form.Label>Cidade *</Form.Label><Form.Control name="localizacao.cidade" value={veiculo.localizacao.cidade} onChange={handleChange} required /></Form.Group>
+                                    <Form.Group as={Col} md={6} className="mb-3"><Form.Label>Estado *</Form.Label><Form.Select name="localizacao.estado" value={veiculo.localizacao.estado} onChange={handleChange}><option value="SP">São Paulo</option><option value="RJ">Rio de Janeiro</option><option value="MG">Minas Gerais</option><option value="PR">Paraná</option><option value="SC">Santa Catarina</option><option value="RS">Rio Grande do Sul</option></Form.Select></Form.Group>
+                                </Row>
+                            </Card.Body>
+                        </Card>
+                        
+                        {/* --- SEÇÃO DE DETALHES TÉCNICOS --- */}
+                        <Card className="mb-4">
+                            <Card.Header>Detalhes Técnicos</Card.Header>
+                            <Card.Body>
+                                <Row>
+                                    <Form.Group as={Col} md={4} className="mb-3"><Form.Label>Marca *</Form.Label><Form.Control name="detalhes.marca" value={veiculo.detalhes.marca} onChange={handleChange} required /></Form.Group>
+                                    <Form.Group as={Col} md={4} className="mb-3"><Form.Label>Modelo *</Form.Label><Form.Control name="detalhes.modelo" value={veiculo.detalhes.modelo} onChange={handleChange} required /></Form.Group>
+                                    <Form.Group as={Col} md={4} className="mb-3"><Form.Label>Ano *</Form.Label><Form.Control type="number" name="detalhes.ano" value={veiculo.detalhes.ano} onChange={handleChange} required /></Form.Group>
+                                    <Form.Group as={Col} md={4} className="mb-3"><Form.Label>Quilometragem *</Form.Label><Form.Control type="number" name="detalhes.quilometragem" value={veiculo.detalhes.quilometragem} onChange={handleChange} required /></Form.Group>
+                                    <Form.Group as={Col} md={4} className="mb-3"><Form.Label>Potência *</Form.Label><Form.Control name="detalhes.potenciaMotor" value={veiculo.detalhes.potenciaMotor} onChange={handleChange} required /></Form.Group>
+                                    <Form.Group as={Col} md={4} className="mb-3"><Form.Label>Final da Placa *</Form.Label><Form.Control name="detalhes.finalPlaca" value={veiculo.detalhes.finalPlaca} maxLength="1" onChange={handleChange} required /></Form.Group>
+                                    <Form.Group as={Col} md={4} className="mb-3"><Form.Label>Combustível</Form.Label><Form.Select name="detalhes.combustivel" value={veiculo.detalhes.combustivel} onChange={handleChange}><option value="Flex">Flex</option><option value="Gasolina">Gasolina</option><option value="Álcool">Álcool</option><option value="Diesel">Diesel</option><option value="Elétrico">Elétrico</option><option value="Híbrido">Híbrido</option></Form.Select></Form.Group>
+                                    <Form.Group as={Col} md={4} className="mb-3"><Form.Label>Câmbio</Form.Label><Form.Select name="detalhes.cambio" value={veiculo.detalhes.cambio} onChange={handleChange}><option value="Manual">Manual</option><option value="Automático">Automático</option><option value="Automatizado">Automatizado</option></Form.Select></Form.Group>
+                                    <Form.Group as={Col} md={4} className="mb-3"><Form.Label>Direção</Form.Label><Form.Select name="detalhes.direcao" value={veiculo.detalhes.direcao} onChange={handleChange}><option value="Elétrica">Elétrica</option><option value="Hidráulica">Hidráulica</option><option value="Mecânica">Mecânica</option><option value="Eletro-hidráulica">Eletro-hidráulica</option></Form.Select></Form.Group>
+                                    <Form.Group as={Col} md={4} className="mb-3"><Form.Label>Portas *</Form.Label><Form.Control type="number" name="detalhes.portas" value={veiculo.detalhes.portas} onChange={handleChange} required /></Form.Group>
+                                    <Form.Group as={Col} md={4} className="mb-3"><Form.Label>Tipo de Veículo *</Form.Label><Form.Select name="detalhes.tipoVeiculo" value={veiculo.detalhes.tipoVeiculo} onChange={handleChange}><option value="Carro">Carro</option><option value="Moto">Moto</option><option value="Caminhão">Caminhão</option></Form.Select></Form.Group>
+                                    <Form.Group as={Col} md={4} className="mb-3"><Form.Label>Categoria *</Form.Label><Form.Select name="detalhes.categoria" value={veiculo.detalhes.categoria} onChange={handleChange}><option value="Hatch">Hatch</option><option value="Sedan">Sedan</option><option value="SUV">SUV</option><option value="Picape">Picape</option><option value="Van">Van</option></Form.Select></Form.Group>
+                                </Row>
+                                <Row><Form.Group as={Col} md={12} className="mt-3"><Form.Check type="switch" id="kit-gnv-switch" label="Possui Kit GNV" name="detalhes.possuiKitGnv" checked={veiculo.detalhes.possuiKitGnv} onChange={handleChange} /></Form.Group></Row>
+                            </Card.Body>
+                        </Card>
 
-                <div className="form-section">
-                    <h3>Localização</h3>
-                    <div className="form-grid">
-                        <input name="localizacao.cidade" value={veiculo.localizacao.cidade} onChange={handleChange} placeholder="Cidade *" required />
-                        <select name="localizacao.estado" value={veiculo.localizacao.estado} onChange={handleChange} required>
-                           <option value="SP">São Paulo</option>
-                           <option value="RJ">Rio de Janeiro</option>
-                           <option value="MG">Minas Gerais</option>
-                           {/* Adicione outros estados conforme necessário */}
-                        </select>
-                    </div>
-                </div>
-
-                <div className="form-section">
-                    <h3>Detalhes Técnicos</h3>
-                    <div className="form-grid">
-                        <input name="detalhes.marca" value={veiculo.detalhes.marca} onChange={handleChange} placeholder="Marca *" required />
-                        <input name="detalhes.modelo" value={veiculo.detalhes.modelo} onChange={handleChange} placeholder="Modelo *" required />
-                        <input type="number" name="detalhes.ano" value={veiculo.detalhes.ano} onChange={handleChange} placeholder="Ano *" required />
-                        <input type="number" name="detalhes.quilometragem" value={veiculo.detalhes.quilometragem} onChange={handleChange} placeholder="Quilometragem *" required />
-                        <input name="detalhes.potenciaMotor" value={veiculo.detalhes.potenciaMotor} onChange={handleChange} placeholder="Potência do Motor (Ex: 1.0) *" required />
-                        <input name="detalhes.finalPlaca" value={veiculo.detalhes.finalPlaca} onChange={handleChange} placeholder="Final da Placa (1 dígito) *" maxLength="1" required />
-                        <select name="detalhes.combustivel" value={veiculo.detalhes.combustivel} onChange={handleChange}>
-                            <option value="Flex">Flex</option>
-                            <option value="Gasolina">Gasolina</option>
-                            <option value="Álcool">Álcool</option>
-                            <option value="Diesel">Diesel</option>
-                            <option value="Elétrico">Elétrico</option>
-                        </select>
-                         <select name="detalhes.cambio" value={veiculo.detalhes.cambio} onChange={handleChange}>
-                            <option value="Manual">Manual</option>
-                            <option value="Automático">Automático</option>
-                        </select>
-                        <select name="detalhes.direcao" value={veiculo.detalhes.direcao} onChange={handleChange}>
-                            <option value="Elétrica">Elétrica</option>
-                            <option value="Hidráulica">Hidráulica</option>
-                            <option value="Mecânica">Mecânica</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div className="form-actions">
-                    <button type="button" onClick={() => navigate('/admin/dashboard')} className="btn btn-secondary">Cancelar</button>
-                    <button type="submit" className="btn btn-primary" disabled={isUploading}>
-                        {isUploading ? 'A enviar imagens...' : (isEditing ? 'Salvar Alterações' : 'Criar Veículo')}
-                    </button>
-                </div>
-            </form>
-        </div>
+                        <div className="text-end mt-4">
+                            <Button variant="secondary" onClick={() => navigate('/admin/dashboard')} className="me-2">Cancelar</Button>
+                            <Button variant="primary" type="submit" disabled={isUploading}>
+                                {isUploading ? <><Spinner as="span" animation="border" size="sm" /> A enviar...</> : (isEditing ? 'Salvar Alterações' : 'Criar Veículo')}
+                            </Button>
+                        </div>
+                    </Form>
+                </Card.Body>
+            </Card>
+        </Container>
     );
 };
 

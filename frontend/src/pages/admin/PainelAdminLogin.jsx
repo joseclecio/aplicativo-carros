@@ -1,70 +1,54 @@
-// /frontend/src/pages/admin/PainelAdminLogin.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../../api/axiosConfig'; // Usamos nosso apiClient configurado!
-import './Admin.css'; // Um CSS para estilizar
+import apiClient from '../../api/axiosConfig';
+import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 
 const PainelAdminLogin = () => {
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [erro, setErro] = useState('');
-  const navigate = useNavigate();
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+    const [erro, setErro] = useState('');
+    const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault(); // Impede o recarregamento da página
-    setErro(''); // Limpa erros anteriores
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setErro('');
+        try {
+            const response = await apiClient.post('/admin/login', { email, senha });
+            localStorage.setItem('authToken', response.data.token);
+            navigate('/admin/dashboard');
+        } catch (error) {
+            const mensagemErro = error.response?.data?.message || "Erro ao tentar fazer login.";
+            setErro(mensagemErro);
+        }
+    };
 
-    try {
-      // Faz a chamada à API de login
-      const response = await apiClient.post('/admin/login', { email, senha });
-
-      // Se a resposta for bem-sucedida, o backend envia um token
-      const { token } = response.data;
-
-      // Guarda o token no localStorage do navegador para uso futuro
-      localStorage.setItem('authToken', token);
-
-      // Redireciona o utilizador para o dashboard
-      navigate('/admin/dashboard');
-
-    } catch (error) {
-      // Se houver um erro (ex: credenciais inválidas)
-      const mensagemErro = error.response?.data?.message || "Erro ao tentar fazer login. Tente novamente.";
-      setErro(mensagemErro);
-    }
-  };
-
-  return (
-    <div className="login-container">
-      <div className="login-box">
-        <h2>Login do Painel Administrativo</h2>
-        <form onSubmit={handleLogin}>
-          <div className="input-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="senha">Senha</label>
-            <input
-              type="password"
-              id="senha"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              required
-            />
-          </div>
-          {erro && <p className="error-message">{erro}</p>}
-          <button type="submit" className="login-button">Entrar</button>
-        </form>
-      </div>
-    </div>
-  );
+    return (
+        <Container fluid className="vh-100 d-flex justify-content-center align-items-center bg-light">
+            <Row>
+                <Col>
+                    <Card style={{ width: '25rem' }} className="shadow-lg border-0">
+                        <Card.Body className="p-4">
+                            <h2 className="text-center mb-4 fw-bold text-primary">Acesso Administrativo</h2>
+                            <Form onSubmit={handleLogin}>
+                                <Form.Group className="mb-3" controlId="formEmail">
+                                    <Form.Label>Email</Form.Label>
+                                    <Form.Control type="email" placeholder="Digite seu email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                </Form.Group>
+                                <Form.Group className="mb-3" controlId="formPassword">
+                                    <Form.Label>Senha</Form.Label>
+                                    <Form.Control type="password" placeholder="Digite sua senha" value={senha} onChange={(e) => setSenha(e.target.value)} required />
+                                </Form.Group>
+                                {erro && <Alert variant="danger">{erro}</Alert>}
+                                <div className="d-grid mt-4">
+                                    <Button variant="primary" type="submit" size="lg">Entrar</Button>
+                                </div>
+                            </Form>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </Container>
+    );
 };
 
 export default PainelAdminLogin;

@@ -1,6 +1,7 @@
 // /backend/src/controllers/loja.controller.js
 
 const Loja = require('../models/loja.model');
+const Veiculo = require('../models/veiculo.model'); // Importação necessária para a validação
 
 // --- FUNÇÕES PÚBLICAS ---
 
@@ -10,10 +11,7 @@ const Loja = require('../models/loja.model');
  */
 exports.getAllLojas = async (req, res) => {
   try {
-    // Log para diagnóstico no terminal do backend
     console.log("[DEBUG] Recebido pedido para buscar TODAS as lojas.");
-    
-    // Busca todas as lojas, selecionando apenas os campos necessários
     const lojas = await Loja.find().select('nome logomarcaUrl');
     res.status(200).json(lojas);
   } catch (error) {
@@ -48,7 +46,6 @@ exports.getLojaById = async (req, res) => {
 exports.createLoja = async (req, res) => {
   try {
     const { nome, logomarcaUrl, whatsapp } = req.body;
-    // Validação simples para garantir que os campos essenciais foram enviados
     if (!nome || !logomarcaUrl || !whatsapp) {
       return res.status(400).json({ message: 'Nome, logomarca e WhatsApp são obrigatórios.' });
     }
@@ -76,16 +73,28 @@ exports.updateLoja = async (req, res) => {
 };
 
 /**
- * @description Apaga uma loja a partir do painel administrativo.
+ * @description Apaga uma loja, mas apenas se não houver veículos associados.
  */
 exports.deleteLoja = async (req, res) => {
   try {
-    // Futuramente, pode-se adicionar uma verificação para não apagar lojas que possuem veículos.
-    const lojaApagada = await Loja.findByIdAndDelete(req.params.id);
+    const idLoja = req.params.id;
+
+    // Procura por QUALQUER veículo que tenha o idVendedor igual ao ID da loja a ser apagada.
+    const veiculoVinculado = await Veiculo.findOne({ idVendedor: idLoja });
+
+    // Se encontrar um veículo, retorna um erro 400 (Bad Request) com a mensagem específica.
+    if (veiculoVinculado) {
+      return res.status(400).json({ message: "Esta loja possui veículos vinculados e não pode ser apagada." });
+    }
+
+    // Se nenhum veículo for encontrado, prossegue com a exclusão normalmente.
+    const lojaApagada = await Loja.findByIdAndDelete(idLoja);
     if (!lojaApagada) {
       return res.status(404).json({ message: 'Loja não encontrada.' });
     }
+    
     res.status(200).json({ message: 'Loja apagada com sucesso.' });
+
   } catch (error) {
     res.status(500).json({ message: "Erro ao apagar loja", error: error.message });
   }

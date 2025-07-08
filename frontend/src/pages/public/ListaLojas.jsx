@@ -1,43 +1,39 @@
-// /frontend/src/pages/public/ListaLojas.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import apiClient from '../../api/axiosConfig';
-import './Public.css'; // Reutilizamos o mesmo CSS
+import { Container, Row, Col, Card, Spinner } from 'react-bootstrap';
 
 const ListaLojas = () => {
   const [lojas, setLojas] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchLojas = async () => {
-      try {
-        const response = await apiClient.get('/lojas');
-        setLojas(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar lojas:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchLojas();
+    apiClient.get('/lojas')
+      .then(response => setLojas(response.data))
+      .catch(error => console.error("Erro ao buscar lojas:", error))
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) {
-    return <div className="public-container"><h2>A carregar lojas...</h2></div>;
+    return <Container className="text-center p-5"><Spinner animation="border" variant="primary" /></Container>;
   }
 
   return (
-    <div className="public-container">
-      <h1>Lojas Parceiras</h1>
-      <div className="grid-container">
+    <Container>
+      <h1 className="mb-4">Lojas Parceiras</h1>
+      <Row>
         {lojas.map(loja => (
-          <Link to={`/loja/${loja._id}`} key={loja._id} className="loja-card">
-            <img src={loja.logomarcaUrl} alt={`Logo da ${loja.nome}`} />
-            <h3>{loja.nome}</h3>
-          </Link>
+          <Col key={loja._id} md={4} lg={3} className="mb-4">
+            <Card as={Link} to={`/loja/${loja._id}`} className="h-100 text-center text-decoration-none text-dark card-hover border-0 shadow-sm">
+              <Card.Body className="d-flex flex-column justify-content-center align-items-center">
+                <Card.Img variant="top" src={loja.logomarcaUrl} style={{ width: '80%', height: '120px', objectFit: 'contain' }} />
+                <Card.Title className="mt-3">{loja.nome}</Card.Title>
+              </Card.Body>
+            </Card>
+          </Col>
         ))}
-      </div>
-    </div>
+      </Row>
+    </Container>
   );
 };
 
