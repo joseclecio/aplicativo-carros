@@ -10,8 +10,8 @@ exports.getAllLojas = async (req, res) => {
     console.log("[DEBUG] Recebido pedido para buscar TODAS as lojas.");
     
     // --- INÍCIO DA CORREÇÃO ---
-    // Pedimos explicitamente ao banco de dados para incluir o campo 'whatsapp'.
-    const lojas = await Loja.find().select('nome logomarcaUrl whatsapp');
+    // Adicionamos 'createdAt' à lista de campos a serem selecionados.
+    const lojas = await Loja.find().select('nome logomarcaUrl whatsapp createdAt');
     // --- FIM DA CORREÇÃO ---
 
     res.status(200).json(lojas);

@@ -8,6 +8,7 @@ const PainelLojas = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // A chamada à API para buscar as lojas agora receberá o campo 'createdAt'
     apiClient.get('/lojas')
       .then(response => setLojas(response.data))
       .catch(error => console.error("Erro ao buscar lojas:", error))
@@ -33,7 +34,6 @@ const PainelLojas = () => {
   }
 
   return (
-    // O Container-fluid foi removido para alinhar com o dashboard principal
     <>
       <Card className="shadow-sm">
         <Card.Header as="h4" className="d-flex justify-content-between align-items-center">
@@ -43,13 +43,13 @@ const PainelLojas = () => {
           </Button>
         </Card.Header>
         <Card.Body>
-          {/* --- INÍCIO DA ATUALIZAÇÃO DA TABELA --- */}
           <Table responsive="sm" className="align-middle">
             <thead className="table-light">
               <tr>
                 <th className="text-center">Logomarca</th>
                 <th>Nome da Loja</th>
                 <th>Contato WhatsApp</th>
+                <th className="text-center">Data de Criação</th>
                 <th className="text-center">Ações</th>
               </tr>
             </thead>
@@ -62,6 +62,10 @@ const PainelLojas = () => {
                     </td>
                     <td className="fw-bold">{loja.nome}</td>
                     <td>{loja.whatsapp}</td>
+                    <td className="text-center">
+                      {/* Este código agora funcionará, pois 'loja.createdAt' existirá */}
+                      {new Date(loja.createdAt).toLocaleDateString('pt-BR')}
+                    </td>
                     <td className="text-center">
                       <ButtonGroup>
                         <Button as={Link} to={`/admin/loja/editar/${loja._id}`} variant="outline-primary" size="sm" title="Editar">
@@ -76,12 +80,11 @@ const PainelLojas = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center py-4">Nenhuma loja encontrada. Clique em "Adicionar Nova Loja" para começar.</td>
+                  <td colSpan="5" className="text-center py-4">Nenhuma loja encontrada. Clique em "Adicionar Nova Loja" para começar.</td>
                 </tr>
               )}
             </tbody>
           </Table>
-          {/* --- FIM DA ATUALIZAÇÃO DA TABELA --- */}
         </Card.Body>
       </Card>
     </>

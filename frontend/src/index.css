@@ -143,3 +143,126 @@ code {
   height: 100%;
   object-fit: contain;
 }
+/* /frontend/src/index.css */
+
+/* ... (código CSS existente) ... */
+
+
+/* --- NOVOS ESTILOS PARA A LISTA DE VEÍCULOS --- */
+
+/* Estilo para o Card de Veículo na visualização em LISTA */
+.vehicle-list-item {
+  flex-direction: row !important; /* Força o alinhamento horizontal do card */
+  max-height: 180px; /* Limita a altura para um visual de lista */
+}
+
+/* Ajusta a imagem para a visualização em lista */
+.vehicle-list-item .card-img-top {
+  width: 250px !important; /* Largura fixa para a imagem */
+  height: 100%; /* Ocupa toda a altura do card */
+  object-fit: cover;
+  /* Arredonda apenas os cantos esquerdos da imagem */
+  border-top-left-radius: var(--bs-card-inner-border-radius);
+  border-top-right-radius: 0;
+  border-bottom-left-radius: var(--bs-card-inner-border-radius);
+}
+
+/* Ajusta o corpo do card para a visualização em lista */
+.vehicle-list-item .card-body {
+  padding: 1rem 1.5rem;
+}
+
+/* Ajusta o rodapé do card para a visualização em lista */
+.vehicle-list-item .list-group-flush {
+  border-top: 1px solid var(--bs-card-border-color);
+  margin-top: auto; /* Empurra para o fundo do card */
+}
+
+.vehicle-list-item .list-group-item {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Dentro da regra .thumbnail-img */
+.thumbnail-img { 
+  width: 70px; /* Um pouco menor para caber mais em ecrãs de telemóvel */
+  height: 55px; 
+  object-fit: cover; 
+  cursor: pointer; 
+  border: 2px solid transparent; 
+  transition: border-color 0.2s; 
+}
+
+/* /frontend/src/index.css */
+
+/* ... (código CSS existente como .card-hover e para a lista de lojas) ... */
+
+
+/* --- ESTILOS CORRIGIDOS E FINAIS PARA A LISTA DE VEÍCULOS --- */
+
+/* Estilo para o Card de Veículo na visualização em LISTA (Desktop) */
+.vehicle-list-item {
+  flex-direction: row !important;
+  max-height: 180px; 
+}
+
+.vehicle-list-item .card-vehicle-image {
+  width: 200px !important;
+  height: 100%;
+  object-fit: cover;
+  border-top-left-radius: var(--bs-card-inner-border-radius);
+  border-top-right-radius: 0;
+  border-bottom-left-radius: var(--bs-card-inner-border-radius);
+}
+
+.vehicle-list-item .card-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-left: 1px solid #eee;
+}
+
+.vehicle-list-item .card-body {
+  flex-grow: 1; 
+}
+
+/* Estilo para o Card de Veículo na visualização em GRID (Desktop) */
+.card-vehicle-image {
+  height: 200px;
+  object-fit: cover;
+}
+
+/* --- REGRAS DE RESPONSIVIDADE PARA DISPOSITIVOS MÓVEIS --- */
+@media (max-width: 767.98px) {
+  .vehicle-list-item {
+    max-height: none !important; 
+    align-items: flex-start !important; /* Alinha os itens no topo */
+  }
+
+  /* --- INÍCIO DA CORREÇÃO PRINCIPAL --- */
+  .vehicle-list-item .card-vehicle-image {
+    width: 100px !important;  /* <<< LARGURA SIGNIFICATIVAMENTE MENOR */
+    height: 80px !important;   /* <<< ALTURA FIXA PARA CONSISTÊNCIA */
+    flex-shrink: 0;          /* Impede que a imagem encolha */
+  }
+  /* --- FIM DA CORREÇÃO PRINCIPAL --- */
+
+  .vehicle-list-item .card-body {
+    padding: 0.5rem 0.75rem; /* Reduz o padding para dar mais espaço */
+  }
+  
+  .vehicle-list-item .card-vehicle-title {
+      font-size: 0.9rem;
+      min-height: auto; /* Remove a altura mínima no mobile */
+      margin-bottom: 0.25rem !important;
+  }
+
+  .vehicle-list-item .card-text {
+      font-size: 1rem !important; /* Ajusta o tamanho do preço */
+  }
+
+  .vehicle-list-item .list-group-item {
+      font-size: 0.75rem;
+      padding: 0.5rem 0.75rem;
+  }
+}

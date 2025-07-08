@@ -6,7 +6,7 @@ import { Container, Row, Col, Card, Spinner, Button, ButtonGroup } from 'react-b
 const ListaLojas = () => {
   const [lojas, setLojas] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' é o padrão
+  const [viewMode, setViewMode] = useState('grid'); 
 
   useEffect(() => {
     apiClient.get('/lojas')
@@ -35,25 +35,30 @@ const ListaLojas = () => {
 
       <Row>
         {lojas.map(loja => (
-          // --- INÍCIO DA CORREÇÃO ---
-          <Col key={loja._id} lg={viewMode === 'grid' ? 3 : 12} md={viewMode === 'grid' ? 4 : 12} className="mb-4">
-            {/* Adicionamos a classe condicional aqui */}
-            <Card
-              as={Link}
-              to={`/loja/${loja._id}`}
+          // --- INÍCIO DA ATUALIZAÇÃO DE RESPONSIVIDADE ---
+          // Adicionamos xs={12} e sm={6} para forçar o empilhamento em ecrãs pequenos
+          <Col 
+            key={loja._id} 
+            xs={12} 
+            sm={viewMode === 'grid' ? 6 : 12}
+            md={viewMode === 'grid' ? 4 : 12} 
+            lg={viewMode === 'grid' ? 3 : 12} 
+            className="mb-4"
+          >
+            <Card 
+              as={Link} 
+              to={`/loja/${loja._id}`} 
               className={`h-100 text-decoration-none text-dark card-hover border-0 shadow-sm ${viewMode === 'list' ? 'store-list-item' : 'store-grid-item'}`}
             >
               <Card.Body>
                 <div className="store-logo-container">
                   <Card.Img src={loja.logomarcaUrl} className="store-logo" />
                 </div>
-                {/* A div .store-info foi removida para simplificar. 
-                    O flexbox do Card.Body já organiza os itens. */}
                 <Card.Title className="m-0">{loja.nome}</Card.Title>
               </Card.Body>
             </Card>
           </Col>
-          // --- FIM DA CORREÇÃO ---
+          // --- FIM DA ATUALIZAÇÃO DE RESPONSIVIDADE ---
         ))}
       </Row>
     </Container>

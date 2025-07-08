@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import apiClient from '../../api/axiosConfig';
 import { Container, Button, Table, Spinner, ButtonGroup, Row, Col, Card, Alert, Badge } from 'react-bootstrap';
 
@@ -25,15 +25,11 @@ const PainelAdminDashboard = () => {
   const [stats, setStats] = useState({ totalVeiculos: 0, totalLojas: 0, totalVisualizacoes: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // A função de logout e o hook useNavigate foram removidos daqui, pois agora residem na Sidebar.
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
-
-      // Busca os dados de forma resiliente
       try {
         const veiculosRes = await apiClient.get('/veiculos');
         setVeiculos(veiculosRes.data);
@@ -41,17 +37,14 @@ const PainelAdminDashboard = () => {
         console.error("Erro ao buscar veículos:", veiculosError);
         setError("Não foi possível carregar a lista de veículos.");
       }
-
       try {
         const statsRes = await apiClient.get('/dashboard/stats');
         setStats(statsRes.data);
       } catch (statsError) {
         console.error("Aviso: Falha ao buscar estatísticas.", statsError);
       }
-
       setLoading(false);
     };
-
     fetchData();
   }, []);
 
@@ -94,9 +87,11 @@ const PainelAdminDashboard = () => {
           <Table responsive="sm" className="align-middle">
             <thead className="table-light">
               <tr>
-                <th>Tipo de Vendedor</th>
+                <th>Origem / Título</th>
                 <th>Marca/Modelo</th>
-                <th className="text-center">Tipo</th>
+                {/* --- INÍCIO DA ALTERAÇÃO --- */}
+                <th className="text-center">Data de Criação</th>
+                {/* --- FIM DA ALTERAÇÃO --- */}
                 <th className="text-center">Visualizações</th>
                 <th className="text-center">Ações</th>
               </tr>
@@ -113,11 +108,11 @@ const PainelAdminDashboard = () => {
                       )}
                     </td>
                     <td>{`${veiculo.detalhes.marca} ${veiculo.detalhes.modelo}`}</td>
+                    {/* --- INÍCIO DA ALTERAÇÃO --- */}
                     <td className="text-center">
-                      <Badge pill bg={veiculo.tipoVendedor === 'loja' ? 'info' : 'secondary'} className="text-capitalize">
-                        {veiculo.tipoVendedor}
-                      </Badge>
+                      {new Date(veiculo.createdAt).toLocaleDateString('pt-BR')}
                     </td>
+                    {/* --- FIM DA ALTERAÇÃO --- */}
                     <td className="text-center">{veiculo.visualizacoes}</td>
                     <td className="text-center">
                       <ButtonGroup>
@@ -133,6 +128,7 @@ const PainelAdminDashboard = () => {
                 ))
               ) : (
                 <tr>
+                  {/* Atualizado para 5 colunas */}
                   <td colSpan="5" className="text-center py-4">Nenhum veículo encontrado. Clique em "Adicionar Veículo" para começar.</td>
                 </tr>
               )}
